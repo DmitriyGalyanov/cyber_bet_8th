@@ -14,7 +14,8 @@ Wall.propTypes = {
  * @param {{body: object, size: [number, number]}} props
  */
 export function Wall({body, size}) {
-	if (!__DEV__) return null;
+	// if (!__DEV__) return null;
+	return null;
 
 	const [width, height] = size;
 
