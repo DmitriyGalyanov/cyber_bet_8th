@@ -1,8 +1,6 @@
-const images = {
-	back: require('./back.png'),
-	home: require('./home.png'),
-	pause: require('./pause.png'),
-	restart: require('./restart.png'),
-};
+export fieldBg from './fieldBg.png';
 
-export default images;
+export firstPlayerImg from './firstPlayerImg.png';
+export secondPlayerImg from './secondPlayerImg.png';
+
+export hockeyPuck from './hockeyPuck.png';

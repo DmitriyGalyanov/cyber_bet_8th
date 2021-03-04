@@ -1,6 +1,6 @@
 import Matter from 'matter-js';
 
-const Physics = (entities, {time, dispatch}) => {
+export const Physics = (entities, {time, dispatch}) => {
   const engine = entities.physics.engine
   const timeInterval = time.delta
 
@@ -13,5 +13,3 @@ const Physics = (entities, {time, dispatch}) => {
 
   return entities
 }
-
-export default Physics

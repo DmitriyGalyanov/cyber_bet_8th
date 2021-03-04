@@ -1,7 +1,6 @@
-import Entity from './Entity';
-import Monkey from './Monkey';
+export * from './Wall';
+export * from './FieldGate';
 
-export {
-	Entity,
-	Monkey,
-};
+export * from './PlayerStick';
+
+export * from './HockeyPuck';
