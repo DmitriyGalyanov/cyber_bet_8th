@@ -4,3 +4,5 @@ export firstPlayerImg from './firstPlayerImg.png';
 export secondPlayerImg from './secondPlayerImg.png';
 
 export hockeyPuck from './hockeyPuck.png';
+
+export pause from './pause.png';
