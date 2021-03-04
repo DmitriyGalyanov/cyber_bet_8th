@@ -16,6 +16,7 @@
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-native": "0.63.4",
+    "react-native-appsflyer": "^6.2.10",
     "react-native-idfa": "^4.1.0"
   },
   "devDependencies": {
