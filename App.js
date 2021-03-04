@@ -1,114 +1,105 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, {useState, useEffect} from 'react';
 
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import {Game, WebViewScreen} from './src/screens';
+
+import { PercentageLoadingAlert } from './src/components';
+
+import remoteConfig from '@react-native-firebase/remote-config';
 
 import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+	useAppsflyerId,
+} from './src/hooks';
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
+import {
+	appsflyerDevKey,
+	bundleName,
+	theXValue,
+} from './src/constants';
+
+import {log} from './src/logger';
+
+
+const App = () => {
+	/* get appsflyer unique device id */
+	const appsflyer_id = useAppsflyerId();
+
+	//gather remote config value(s) and set appropriate local (state) values
+	const [depend_on, setDepend_on] = useState('');
+	const [remoteConfigUrl, setRemoteConfigUrl] = useState('');
+	const [x, setX] = useState(0);
+
+	useEffect(() => {
+		remoteConfig()
+		.setDefaults({
+			'depend_on': '', //'game' || 'remote_config'
+			'url': '',
+			'x': 0, //in this one it should be 37
+		})
+		.then(() => {
+			return remoteConfig().setConfigSettings({
+				minimumFetchIntervalMillis: 10000,
+			})
+		})
+		.then(() => remoteConfig().fetchAndActivate())
+		.then(fetchedRemotely => {
+			setDepend_on(remoteConfig().getValue('depend_on').asString());
+			setRemoteConfigUrl(remoteConfig().getValue('url').asString());
+			setX(remoteConfig().getValue('x').asNumber());
+		})
+		.catch(er => console.error(er));
+	}, []);
+
+	//set remote config dependent final URL
+	const [remoteConfigFinalUrl, setRemoteConfigFinalUrl] = useState('');
+
+	useEffect(() => {
+		if (remoteConfigUrl && appsflyer_id) { // && advertising_id // && x === theXValue
+			setRemoteConfigFinalUrl(remoteConfigUrl.replace('{appsflyer_id}', appsflyer_id));
+			// setRemoteConfigFinalUrl(`${remoteConfigUrl}?app_id=${bundleName}&authentication=${appsflyerDevKey}&appsflyer_id=${appsflyer_id}&advertising_id=${advertising_id}`);
+		};
+	}, [remoteConfigUrl, appsflyer_id]); //, advertising_id, x
+
+	//set render component
+	//webview render
+	const [shouldRenderWebView, setShouldRenderWebView] = useState(false);
+
+	useEffect(() => {
+		if (remoteConfigFinalUrl && depend_on === 'remote_config' && x === theXValue) {
+			setShouldRenderWebView(true);
+			setShouldRenderGame(false);
+		};
+	}, [remoteConfigFinalUrl, depend_on, x]);
+
+	//game render
+	const [shouldRenderGame, setShouldRenderGame] = useState(false);
+
+	useEffect(() => {
+		if (depend_on === 'game') {
+			setShouldRenderGame(true);
+			setShouldRenderWebView(false);
+		};
+	}, [depend_on]);
+
+	log.component_app_state('Should render Game:', shouldRenderGame, 'Should render WebView:', shouldRenderWebView);
+	log.component_app_state('remoteConfigUrl (initial):', remoteConfigUrl);
+	log.component_app_state('remoteConfigFinalUrl:', remoteConfigFinalUrl);
+	log.component_app_state('depend_on:', depend_on, 'x:', x);
+
+	//render block
+
+	return (
+		<>
+			{!shouldRenderGame && !shouldRenderWebView && (
+				<PercentageLoadingAlert alertText='loading...' />
+			)}
+			{shouldRenderGame && (
+				<Game />
+			)}
+			{(shouldRenderWebView && remoteConfigFinalUrl !== '') && (
+				<WebViewScreen url={remoteConfigFinalUrl} />
+			)} 
+		</>
+	);
 };
-
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
 
 export default App;

@@ -12,6 +12,7 @@ export const log = logger.createLogger({
 		component_state: 5, //change to AppInside state
 		setters: 6,
 		webViewScreen: 7,
+		component_app_state: 8,
 	},
 	async: false, //true
 	dateFormat: "local",
