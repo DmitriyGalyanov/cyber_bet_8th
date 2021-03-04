@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {TouchableOpacity, Text} from 'react-native';
 
-import { mainBGColor, mainTextColor, windowWidth } from '../constants';
+import { actionButtonBgColor, mainTextColor, windowWidth } from '../constants';
 
 
 ActionButton.propTypes = {
@@ -16,7 +16,7 @@ export function ActionButton ({onPress, title}) {
 			style={{
 				minWidth: windowWidth * 0.8,
 				paddingVertical: 16,
-				backgroundColor: mainBGColor,
+				backgroundColor: actionButtonBgColor,
 				borderRadius: 8,
 				borderWidth: 2,
 				borderColor: mainTextColor,

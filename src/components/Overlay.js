@@ -12,14 +12,21 @@ import { windowHeight, windowWidth } from '../constants';
 
 Overlay.propTypes = {
 	setGameMode: PropTypes.func.isRequired,
-}
-export function Overlay ({setGameMode}) {
+	isPause: PropTypes.bool.isRequired,
+};
+export function Overlay ({setGameMode, resume, isPause}) {
 
+	//add button for unpause
 	return (
 		<View style={styles.wrap}>
 			<ActionButton onPress={() => setGameMode('twoPlayers')}
 				title='Играть вдвоём'
 			/>
+			{isPause && (
+				<ActionButton onPress={resume}
+					title='Продолжить'
+				/>
+			)}
 		</View>
 	)
 }
@@ -29,10 +36,11 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		width: windowWidth,
 		height: windowHeight,
-		justifyContent: 'center',
+		justifyContent: 'space-between',
 		alignItems: 'center',
 		backgroundColor: 'rgba(207, 207, 201, 0.4)',
-		paddingBottom: windowHeight * 0.2,
+		paddingBottom: windowHeight * 0.4,
+		paddingTop: windowHeight * 0.2,
 	},
 });
 
