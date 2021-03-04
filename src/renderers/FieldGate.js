@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {View} from 'react-native';
-import { firstPlayerGateColor, secondPlayerGateColor } from '../constants';
+import { firstPlayerColor, secondPlayerColor } from '../constants';
 
 
 FieldGate.propTypes = {
@@ -26,7 +26,7 @@ export function FieldGate({body, size, name}) {
 				position: 'absolute',
 				left: x,
 				top: y,
-				backgroundColor: name === 'firstPlayerGate' ? firstPlayerGateColor : secondPlayerGateColor,
+				backgroundColor: name === 'firstPlayerGate' ? firstPlayerColor : secondPlayerColor,
 			}}
 		/>
 	)

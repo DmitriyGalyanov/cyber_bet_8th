@@ -6,9 +6,9 @@ export {windowWidth, windowHeight};
 
 //game values NEW
 //field settings
-export const playFieldHeight = windowHeight * 0.7;
+export const playFieldHeight = windowHeight * 0.80;
 export const playFieldWidth = windowWidth * 0.9;
-export const topFieldOffset = windowHeight * 0.2;
+export const topFieldOffset = windowHeight * 0.15;
 export const bottomFieldOffset = windowHeight * 0.1;
 export const sideFieldOffset = windowWidth * 0.05;
 
@@ -18,8 +18,8 @@ export const horizontalWallsWidth = 40;
 export const fieldGateWidth = playFieldWidth * 0.35;
 export const fieldGateHeight = 8;
 
-export const firstPlayerGateColor = 'red';
-export const secondPlayerGateColor = 'blue';
+export const firstPlayerColor = 'red';
+export const secondPlayerColor = 'blue';
 
 //hockeyPuck entitity settings
 export const hockeyPuckInitPosition = {
@@ -44,7 +44,8 @@ export const secondPlayerInitPosition = {
 
 //styles
 //colors
-export const mainBGColor = '#F5AB40';
+export const actionButtonBgColor = '#F5AB40';
+export const mainBgColor = '#3D445F';
 
 export const mainTextColor = '#fff';
 
