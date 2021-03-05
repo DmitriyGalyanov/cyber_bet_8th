@@ -22,6 +22,9 @@ export function Overlay ({setGameMode, resume, isPause}) {
 			<ActionButton onPress={() => setGameMode('twoPlayers')}
 				title='Играть вдвоём'
 			/>
+			<ActionButton onPress={() => setGameMode('singlePlayer')}
+				title='Играть с ботом'
+			/>
 			{isPause && (
 				<ActionButton onPress={resume}
 					title='Продолжить'
