@@ -42,6 +42,12 @@ export const secondPlayerInitPosition = {
 	y: playFieldHeight * 0.15,
 };
 
+//collision categories
+export const fieldBorders_collisionCategory = 0x0001; //2
+export const middleWall_collisionCategory = 0x0002; //4
+export const player_collisionCategory = 0x0004;//16 //0x0010
+export const hockeyPuck_collisionCategory = 0x0004; //16
+
 //styles
 //colors
 export const actionButtonBgColor = '#F5AB40';
