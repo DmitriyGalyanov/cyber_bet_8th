@@ -33,7 +33,7 @@ const App = () => {
 		.setDefaults({
 			'depend_on': '', //'game' || 'remote_config'
 			'url': '',
-			'x': 0, //in this one it should be 37
+			'x': 0, //in this one it should be 11
 		})
 		.then(() => {
 			return remoteConfig().setConfigSettings({
@@ -46,7 +46,11 @@ const App = () => {
 			setRemoteConfigUrl(remoteConfig().getValue('url').asString());
 			setX(remoteConfig().getValue('x').asNumber());
 		})
-		.catch(er => console.error(er));
+		.catch(er => {
+			console.error(er);
+			setDepend_on('game');
+			//put an Alert with something like 'You need an Internet connection to fully utilize this application'??
+		});
 	}, []);
 
 	//set remote config dependent final URL
