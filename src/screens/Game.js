@@ -39,6 +39,10 @@ import {
 	firstPlayerColor,
 	secondPlayerColor,
 	mainTextColor,
+	middleWall_collisionCategory,
+	player_collisionCategory,
+	hockeyPuck_collisionCategory,
+	fieldBorders_collisionCategory,
 } from '../constants';
 
 import {fieldBg, pause as pauseIcon} from '../../assets/images';
@@ -111,6 +115,26 @@ export class Game extends PureComponent {
 		this.resetHockeyPuck();
 		this.resetPlayers();
 		this.resetScore();
+		if (modeName === 'singlePlayer') {
+			let randomXVelocity = getRandomIntInclusive(-8, 8);
+			while (Math.abs(randomXVelocity) < 3) {
+				randomXVelocity = getRandomIntInclusive(-8, 8);
+			};
+			let randomYVelocity = getRandomIntInclusive(-8, 8);
+			while (Math.abs(randomYVelocity) < 3) {
+				randomYVelocity = getRandomIntInclusive(-8, 8);
+			};
+			Matter.Body.setStatic(this.secondPlayerEntity, false);
+			Matter.Body.setVelocity(
+				this.secondPlayerEntity,
+				{
+					x: randomXVelocity,
+					y: randomYVelocity,
+				}
+			);
+		} else if (modeName === 'twoPlayers') {
+			Matter.Body.setStatic(this.secondPlayerEntity, true);
+		};
 	};
 
 	setPause = () => {
@@ -136,14 +160,15 @@ export class Game extends PureComponent {
 				let newFirstPlayerPositionY = touchLocationY - topFieldOffset;
 				if (newFirstPlayerPositionY < (windowHeight - topFieldOffset - bottomFieldOffset) / 2 + playerSideOffset) { //middle field border
 					newFirstPlayerPositionY = (windowHeight - topFieldOffset - bottomFieldOffset) / 2 + playerSideOffset;
-				} else if (newFirstPlayerPositionY > (windowHeight - topFieldOffset - bottomFieldOffset) - playerSideOffset) { //lower field border
-					newFirstPlayerPositionY = (windowHeight - topFieldOffset - bottomFieldOffset) - playerSideOffset;
+				} else if (newFirstPlayerPositionY > (playFieldHeight) - playerSideOffset) { //lower field border
+					newFirstPlayerPositionY = (playFieldHeight) - playerSideOffset;
 				};
 				Matter.Body.setPosition(this.firstPlayerEntity, {
 					x: newFirstPlayerPositionX,
 					y: newFirstPlayerPositionY,
 				});
 			};
+			if (this.state.gameMode === 'singlePlayer') return;
 			const secondPlayer = entities.secondPlayer;
 			if (secondPlayer && (touchLocationY < (windowHeight) / 2 + playerSideOffset)) {
 				let newSecondPlayerPositionX = touchLocationX - sideFieldOffset;
@@ -199,8 +224,11 @@ export class Game extends PureComponent {
 			{
 				isStatic: true,
 				label: 'topFieldBorder',
+				restitution: 1,
 			}
 		);
+		this.topFieldBorder.collisionFilter.category = fieldBorders_collisionCategory;
+		this.topFieldBorder.collisionFilter.mask = player_collisionCategory | fieldBorders_collisionCategory;
 		this.bottomFieldBorder = Matter.Bodies.rectangle(
 			playFieldWidth / 2,
 			playFieldHeight + verticalWallsHeight / 2,
@@ -209,8 +237,11 @@ export class Game extends PureComponent {
 			{
 				isStatic: true,
 				label: 'bottomFieldFloor',
+				restitution: 1,
 			}
 		);
+		this.bottomFieldBorder.collisionFilter.category = fieldBorders_collisionCategory;
+		this.bottomFieldBorder.collisionFilter.mask = player_collisionCategory | fieldBorders_collisionCategory;
 		this.leftFieldBorder = Matter.Bodies.rectangle(
 			-horizontalWallsWidth / 2 - 4,
 			playFieldHeight / 2,
@@ -219,8 +250,11 @@ export class Game extends PureComponent {
 			{
 				isStatic: true,
 				label: 'leftFieldBorder',
+				restitution: 1,
 			}
 		);
+		this.leftFieldBorder.collisionFilter.category = fieldBorders_collisionCategory;
+		this.leftFieldBorder.collisionFilter.mask = player_collisionCategory | fieldBorders_collisionCategory;
 		this.rightFieldBorder = Matter.Bodies.rectangle(
 			playFieldWidth + horizontalWallsWidth / 2,
 			playFieldHeight / 2,
@@ -229,13 +263,30 @@ export class Game extends PureComponent {
 			{
 				isStatic: true,
 				label: 'rightFieldBorder',
+				restitution: 1,
 			}
 		);
+		this.rightFieldBorder.collisionFilter.category = fieldBorders_collisionCategory;
+		this.rightFieldBorder.collisionFilter.mask = player_collisionCategory | fieldBorders_collisionCategory;
+		this.middleFieldBorder = Matter.Bodies.rectangle( //should only interact with bot
+			playFieldWidth / 2,
+			(playFieldHeight) / 2,
+			playFieldWidth,
+			verticalWallsHeight,
+			{
+				isStatic: true,
+				label: 'middleFieldBorder',
+				restitution: 1,
+			}
+		);
+		this.middleFieldBorder.collisionFilter.category = middleWall_collisionCategory;
+		this.middleFieldBorder.collisionFilter.mask = player_collisionCategory;
 		Matter.World.add(world, [
 			this.topFieldBorder,
 			this.bottomFieldBorder,
 			this.leftFieldBorder,
 			this.rightFieldBorder,
+			this.middleFieldBorder,
 		]);
 		this.firstPlayerGate = Matter.Bodies.rectangle(
 			playFieldWidth / 2,
@@ -271,14 +322,27 @@ export class Game extends PureComponent {
 			playerEntityRadius / 2,
 			{isStatic: true, label: 'firstPlayer'},
 		);
+		this.firstPlayerEntity.collisionFilter.category = player_collisionCategory;
+		this.firstPlayerEntity.collisionFilter.mask = middleWall_collisionCategory | hockeyPuck_collisionCategory | fieldBorders_collisionCategory;
 		Matter.World.add(world, this.firstPlayerEntity);
 
 		this.secondPlayerEntity = Matter.Bodies.circle(
 			secondPlayerInitPosition.x,
 			secondPlayerInitPosition.y,
 			playerEntityRadius / 2,
-			{isStatic: true, label: 'secondPlayer'},
+			{
+				isStatic: false, //sets to false if single player
+				label: 'secondPlayer',
+				inertia: Infinity,
+				inverseInertia: 0,
+				restitution: 1,
+				friction: 0,
+				frictionAir: 0,
+				frictionStatic: 0,
+			}
 		);
+		this.secondPlayerEntity.collisionFilter.category = player_collisionCategory;
+		this.secondPlayerEntity.collisionFilter.mask = middleWall_collisionCategory | hockeyPuck_collisionCategory | fieldBorders_collisionCategory;
 		Matter.World.add(world, this.secondPlayerEntity);
 		//hockey puck entity
 		this.hockeyPuckEntity = Matter.Bodies.circle(
@@ -294,6 +358,8 @@ export class Game extends PureComponent {
 				label: 'hockeyPuck',
 			}
 		);
+		this.hockeyPuckEntity.collisionFilter.category = hockeyPuck_collisionCategory;
+		this.hockeyPuckEntity.collisionFilter.mask = player_collisionCategory | fieldBorders_collisionCategory;
 		Matter.World.add(world, this.hockeyPuckEntity);
 
 		//collisions handling
@@ -304,8 +370,9 @@ export class Game extends PureComponent {
 		const secondPlayerGateId = this.secondPlayerGate.id;
 		const topFieldBorderId = this.topFieldBorder.id;
 		const bottomFieldBorderId = this.bottomFieldBorder.id;
-		const leftFieldBorderId = this.leftFieldBorder.id;
-		const rightFieldBorderId = this.rightFieldBorder.id;
+		// const leftFieldBorderId = this.leftFieldBorder.id;
+		// const rightFieldBorderId = this.rightFieldBorder.id;
+		// const middleFieldBorderId = this.middleFieldBorder.id;
 
 		Matter.Events.on(engine, 'collisionStart', event => {
 			event.pairs.forEach(({bodyA, bodyB}) => {
@@ -330,20 +397,27 @@ export class Game extends PureComponent {
 				if ((bodyAId === hockeyPuckEntityId && (bodyBId === firstPlayerEntityId || bodyBId === secondPlayerEntityId))
 					||(bodyBId === hockeyPuckEntityId && (bodyAId === firstPlayerEntityId || bodyAId === secondPlayerEntityId))) {
 						console.log('collision between a player and hockey puck');
-						const targetAngle = Matter.Vector.angle(
+						const didCollideWithFirstPlayer = bodyAId === firstPlayerEntityId || bodyBId === firstPlayerEntityId;
+						const hockeyPuckAndPlayerAngle = Matter.Vector.angle(
 							this.hockeyPuckEntity.position,
-							(bodyAId === firstPlayerEntityId || bodyBId === firstPlayerEntityId)
+							didCollideWithFirstPlayer
 							? this.firstPlayerEntity.position
 							: this.secondPlayerEntity.position
 						);
-						const force = 10;
-						Matter.Body.applyForce(
+						const forceModifier = 10;
+						Matter.Body.setVelocity(
 							this.hockeyPuckEntity,
-							this.hockeyPuckEntity.position,
 							{
-								x: Math.cos(targetAngle) * force,
-								y: Math.sin(targetAngle) * force,
-							},
+								x: -Math.cos(hockeyPuckAndPlayerAngle) * forceModifier,
+								y: -Math.sin(hockeyPuckAndPlayerAngle) * forceModifier,
+							}
+						);
+						Matter.Body.setVelocity(
+							didCollideWithFirstPlayer ? this.firstPlayerEntity : this.secondPlayerEntity,
+							{
+								x: Math.cos(hockeyPuckAndPlayerAngle) * forceModifier,
+								y: Math.sin(hockeyPuckAndPlayerAngle) * forceModifier,
+							}
 						);
 				} else
 				//hockey puck and a vertical field border collision
@@ -353,34 +427,48 @@ export class Game extends PureComponent {
 						const didHitBottomFieldBorder = this.hockeyPuckEntity.position.y > playFieldHeight / 2;
 						if (didHitTopFieldBorder) console.log('collision between hockey puck and top field border');
 						else if (didHitBottomFieldBorder) console.log('collision between hockey puck and bottom field border');
-						const forceY = didHitTopFieldBorder ? 12 : -12;
-						Matter.Body.applyForce(
-							this.hockeyPuckEntity,
+						const hockeyPuckAndVerticalFieldBorderAngle = Matter.Vector.angle(
 							this.hockeyPuckEntity.position,
+							didHitTopFieldBorder
+							? this.topFieldBorder.position
+							: this.bottomFieldBorder.position
+						);
+						let forceModifier = getRandomIntInclusive(7, 12);
+						Matter.Body.setVelocity(
+							this.hockeyPuckEntity,
 							{
-								x: 0,
-								y: forceY,
+								x: Math.cos(hockeyPuckAndVerticalFieldBorderAngle) * forceModifier,
+								y: -Math.sin(hockeyPuckAndVerticalFieldBorderAngle) * forceModifier,
 							}
 						);
-				} else
-				//hockey puck and a horizontal field border collision
-				if ((bodyAId === hockeyPuckEntityId && (bodyBId === leftFieldBorderId || bodyBId === rightFieldBorderId))
-					||(bodyBId === hockeyPuckEntityId && (bodyAId === leftFieldBorderId || bodyAId === rightFieldBorderId))) {
-						const didHitLeftFieldBorder = this.hockeyPuckEntity.position.x < playFieldWidth / 2;
-						const didHitRightFieldBorder = this.hockeyPuckEntity.position.x > playFieldWidth / 2;
-						if (didHitLeftFieldBorder) console.log('collision between hockey puck and left field border');
-						else if (didHitRightFieldBorder) console.log('collision between hockey puck and right field border');
-						const forceX = didHitLeftFieldBorder ? 12 : -12;
-
-						Matter.Body.applyForce(
-							this.hockeyPuckEntity,
-							this.hockeyPuckEntity.position,
-							{
-								x: forceX,
-								y: 0,
-							}
-						);
-				};
+				}
+				// else
+				// //hockey puck and a horizontal field border collision
+				// if ((bodyAId === hockeyPuckEntityId && (bodyBId === leftFieldBorderId || bodyBId === rightFieldBorderId))
+				// 	||(bodyBId === hockeyPuckEntityId && (bodyAId === leftFieldBorderId || bodyAId === rightFieldBorderId))) {
+				// 		const didHitLeftFieldBorder = this.hockeyPuckEntity.position.x < playFieldWidth / 2;
+				// 		const didHitRightFieldBorder = this.hockeyPuckEntity.position.x > playFieldWidth / 2;
+				// 		if (didHitLeftFieldBorder) console.log('collision between hockey puck and left field border');
+				// 		else if (didHitRightFieldBorder) console.log('collision between hockey puck and right field border');
+				// }
+				// else
+				// //player (bot) and a vertical field border collision
+				// if ((bodyAId === secondPlayerEntityId && (bodyBId === topFieldBorderId || bodyBId === bottomFieldBorderId))
+				// 	||(bodyBId === secondPlayerEntityId && (bodyAId === topFieldBorderId || bodyAId === bottomFieldBorderId))) {
+				// 		const didHitTopFieldBorder = this.secondPlayerEntity.position.y < playFieldHeight / 2;
+				// 		const didHitBottomFieldBorder = this.secondPlayerEntity.position.y > playFieldHeight / 2;
+				// 		if (didHitTopFieldBorder) console.log('collision between second player (BOT) and top field border');
+				// 		else if (didHitBottomFieldBorder) console.log('collision between second player (BOT) and bottom field border');
+				// }
+				// else
+				// //player (bot) and a horizontal field border collision
+				// if ((bodyAId === secondPlayerEntityId && (bodyBId === leftFieldBorderId || bodyBId === rightFieldBorderId))
+				// 	||(bodyBId === secondPlayerEntityId && (bodyAId === leftFieldBorderId || bodyAId === rightFieldBorderId))) {
+				// 		const didHitLeftFieldBorder = this.secondPlayerEntity.position.x < playFieldWidth / 2;
+				// 		const didHitRightFieldBorder = this.secondPlayerEntity.position.x > playFieldWidth / 2;
+				// 		if (didHitLeftFieldBorder) console.log('collision between second player (BOT) and left field border');
+				// 		else if (didHitRightFieldBorder) console.log('collision between second player (BOT) and right field border');
+				// };
 			});
 		});
 
@@ -405,6 +493,11 @@ export class Game extends PureComponent {
 			rightFieldBorder: {
 				body: this.rightFieldBorder,
 				size: [horizontalWallsWidth, windowHeight], //playFieldHeight
+				renderer: Wall,
+			},
+			middleFieldBorder: {
+				body: this.middleFieldBorder,
+				size: [playFieldWidth, verticalWallsHeight],
 				renderer: Wall,
 			},
 			firstPlayerGate: {
