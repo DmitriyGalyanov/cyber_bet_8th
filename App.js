@@ -84,10 +84,10 @@ const App = () => {
 		};
 	}, [depend_on]);
 
-	// log.component_app_state('Should render Game:', shouldRenderGame, 'Should render WebView:', shouldRenderWebView);
-	// log.component_app_state('remoteConfigUrl (initial):', remoteConfigUrl);
-	// log.component_app_state('remoteConfigFinalUrl:', remoteConfigFinalUrl);
-	// log.component_app_state('depend_on:', depend_on, 'x:', x);
+	log.component_app_state('Should render Game:', shouldRenderGame, 'Should render WebView:', shouldRenderWebView);
+	log.component_app_state('remoteConfigUrl (initial):', remoteConfigUrl);
+	log.component_app_state('remoteConfigFinalUrl:', remoteConfigFinalUrl);
+	log.component_app_state('depend_on:', depend_on, 'x:', x);
 
 	//render block
 
