@@ -7,27 +7,27 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:821438217648:android:985a40ab3ace9ab4c66a75",
+        "mobilesdk_app_id": "1:18760615554:android:d320dd1f651d051049969b",
         "android_client_info": {
-          "package_name": "com.cyber_bet_8th"
+          "package_name": "com.nicebng.kfd.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "821438217648-3hed4n2jkpf3p4qjn5ca766mh6gg34ki.apps.googleusercontent.com",
+          "client_id": "18760615554-rvvqo02r8g6j4obnaju9pvd7hhsih8vf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD5Equwlf0AiZ0FJzDGDUUWtkL5OLkEzms"
+          "current_key": "AIzaSyCVYWdHMtWAv-321CtA0wKy2ywySDqLEZ0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "821438217648-3hed4n2jkpf3p4qjn5ca766mh6gg34ki.apps.googleusercontent.com",
+              "client_id": "18760615554-rvvqo02r8g6j4obnaju9pvd7hhsih8vf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

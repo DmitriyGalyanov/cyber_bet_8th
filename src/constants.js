@@ -57,5 +57,5 @@ export const mainTextColor = '#fff';
 
 // not game-logics related
 export const appsflyerDevKey = 'Cb84BpRLyB5r2M9m8zjhfe';
-export const bundleName = 'com.cyber_bet_8th';
+export const bundleName = 'com.nicebng.kfd.app';
 export const theXValue = 11;

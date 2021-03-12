@@ -131,7 +131,7 @@ android {
 
     defaultConfig {
         multiDexEnabled true
-        applicationId "com.cyber_bet_8th"
+        applicationId "com.nicebng.kfd.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,4 +1,4 @@
-package com.cyber_bet_8th;
+package com.nicebng.kfd.app;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "cyber_bet_8th";
+    return "nicebng.kfd.app";
   }
 }
