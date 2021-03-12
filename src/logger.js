@@ -10,9 +10,11 @@ export const log = logger.createLogger({
 		error: 3,
 		returns: 4,
 		component_state: 5, //change to AppInside state
-		setters: 6,
-		webViewScreen: 7,
-		component_app_state: 8,
+		webview_data_from_storage: 6,
+		setters: 7,
+		webViewScreen: 8,
+		component_app_state: 9,
+		component_game_state: 10,
 	},
 	async: false, //true
 	dateFormat: "local",
